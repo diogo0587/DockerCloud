@@ -25,3 +25,7 @@ jobs:
         run: |
           docker tag unixfox/searx-custom:latest diogo0587/quaali:tagname
           docker push diogo0587/quaali:tagname
+
+      - name: Run Docker image
+        run: |
+          docker run -d --name searx-container -p 5000:5000 diogo0587/quaali:tagname
