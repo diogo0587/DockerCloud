@@ -35,7 +35,7 @@ jobs:
           echo "<html><body><h1>Deploy Successful!</h1><p>Your Docker image diogo0587/quaali:tagname is running successfully.</p><p><a href='artifacts/deploy-status'>Download Artifact</a></p></body></html>" > deploy_status.html
 
       - name: Upload HTML artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: deploy-status
           path: deploy_status.html
