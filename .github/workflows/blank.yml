@@ -34,7 +34,7 @@ jobs:
         run: sleep 30  # Ajuste o tempo conforme necessário para garantir que a página HTML seja gerada
 
       - name: Copy HTML page from container
-        run: docker cp searx-container:/caminho/para/sua_pagina.html ./saida_pagina.html
+        run: docker cp searx-container:/usr/local/searx ./saida_pagina.html
 
       - name: Upload HTML artifact
         uses: actions/upload-artifact@v3
