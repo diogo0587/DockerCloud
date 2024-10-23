@@ -24,14 +24,15 @@ jobs:
           version: "latest"
           driver: "docker-container"
 
+      - name: Pull base image
+        run: docker pull unixfox/searx-custom:latest
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
-          tags: unixfox/searx-custom:latest
-          outputs: ${{ github.event_name == 'pull_request' && 'type=cacheonly' || 'type=registry,push=true' }}
+          tags: diogo0587/quaali:latest
 
-      - name: Pull and run Docker image
+      - name: Run Docker image
         run: |
-          docker pull unixfox/searx-custom:latest
-          docker run -d unixfox/searx-custom:latest
+          docker run -d diogo0587/quaali:latest
