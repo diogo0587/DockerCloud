@@ -30,12 +30,22 @@ jobs:
         run: |
           docker run -d --name searx-container -p 5000:5000 diogo0587/quaali:tagname
 
-      - name: Generate HTML page
-        run: |
-          echo "<html><body><h1>Deploy Successful!</h1><p>Your Docker image diogo0587/quaali:tagname is running successfully.</p><p><a href='artifacts/deploy-status'>Download Artifact</a></p></body></html>" > deploy_status.html
+      - name: Wait for the container to generate the page
+        run: sleep 30  # Ajuste o tempo conforme necessário para garantir que a página HTML seja gerada
+
+      - name: Copy HTML page from container
+        run: docker cp searx-container:/caminho/para/sua_pagina.html ./saida_pagina.html
 
       - name: Upload HTML artifact
         uses: actions/upload-artifact@v3
         with:
-          name: deploy-status
-          path: deploy_status.html
+          name: deploy-page
+          path: saida_pagina.html
+
+      - name: Commit HTML page to repository
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add saida_pagina.html
+          git commit -m 'Adiciona página HTML gerada pelo container'
+          git push
