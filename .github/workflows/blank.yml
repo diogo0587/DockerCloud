@@ -30,3 +30,8 @@ jobs:
           context: .
           tags: unixfox/searx-custom:latest
           outputs: ${{ github.event_name == 'pull_request' && 'type=cacheonly' || 'type=registry,push=true' }}
+
+      - name: Pull and run Docker image
+        run: |
+          docker pull unixfox/searx-custom:latest
+          docker run -d unixfox/searx-custom:latest
