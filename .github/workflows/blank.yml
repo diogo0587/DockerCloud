@@ -9,7 +9,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
@@ -36,16 +36,16 @@ jobs:
       - name: Copy HTML page from container
         run: docker cp searx-container:/usr/local/searx ./saida_pagina.html
 
-      - name: Upload HTML artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: deploy-page
-          path: saida_pagina.html
-
-      - name: Commit HTML page to repository
+      - name: Deploy to GitHub Pages
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add saida_pagina.html
           git commit -m 'Adiciona página HTML gerada pelo container'
-          git push
+          git push origin gh-pages
+
+      - name: Upload HTML artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: deploy-page
+          path: saida_pagina.html
