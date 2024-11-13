@@ -18,45 +18,39 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Pull base image
-        run: docker pull unixfox/searx-custom:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Tag and push image
-        run: |
-          docker tag unixfox/searx-custom:latest diogo0587/quaali:tagname
-          docker push diogo0587/quaali:tagname
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: diogo0587/quaali:latest
 
       - name: Run Docker image
         run: |
-          docker run -d --name searx-container -p 5000:5000 diogo0587/quaali:tagname
+          docker run -d --name searx-container -p 5000:5000 diogo0587/quaali:latest
 
       - name: Wait for the container to generate the page
         run: |
-          for i in {1..30}; do
-            if docker exec searx-container test -f /usr/local/searx; then
-              echo "Página gerada com sucesso."
-              break
-            fi
-            echo "Aguardando a geração da página..."
-            sleep 1
-          done
+          timeout 30s bash -c 'until docker exec searx-container test -f /usr/local/searx/index.html; do sleep 1; done'
 
       - name: Copy HTML page from container
-        run: docker cp searx-container:/usr/local/searx ./saida_pagina.html
+        run: docker cp searx-container:/usr/local/searx/index.html ./index.html
 
       - name: Remove Docker container
         run: docker rm -f searx-container
 
       - name: Deploy to GitHub Pages
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add saida_pagina.html
-          git commit -m 'Adiciona página HTML gerada pelo container'
-          git push origin gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
 
       - name: Upload HTML artifact
         uses: actions/upload-artifact@v3
         with:
           name: deploy-page
-          path: saida_pagina.html
+          path: index.html
